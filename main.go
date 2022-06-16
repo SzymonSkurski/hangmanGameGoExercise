@@ -22,6 +22,7 @@ var words = [][]string{
 	{"dwarves", "fantasy humanlike race"},
 	{"fluffiness", "soft and light"},
 	{"galvanize", "shock or protective layer"},
+	{"united states of america", "quite big country"},
 }
 
 func main() {
