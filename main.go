@@ -180,7 +180,7 @@ func printMatchWord() {
 		if hasTyped(byte(l)) || byte(l) == ' ' {
 			p = l
 		}
-		fmt.Printf("%c", p)
+		fmt.Printf("%c ", p)
 	}
 }
 
