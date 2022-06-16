@@ -131,7 +131,7 @@ func clearScreen() {
 }
 
 func action() {
-	char := getValidChar()
+	char := getNotTypedAlreadyAZChar()
 	typedLetters = append(typedLetters, char)
 	fmt.Println(hasMatch(char))
 	if !hasMatch(char) {
@@ -193,6 +193,7 @@ func printMatchWord() {
 	}
 }
 
+// checks if the given letter has already been entered
 func hasTyped(char byte) bool {
 	char = byte(unicode.ToLower(rune(char)))
 	for _, ch := range typedLetters {
@@ -203,19 +204,22 @@ func hasTyped(char byte) bool {
 	return false
 }
 
-func getValidChar() byte {
+// reads and returns a letter if it is from the set a-z and has not been typed before
+func getNotTypedAlreadyAZChar() byte {
 	char := readCharacter("enter letter")
 	if !isValidLetter(char) {
 		fmt.Println("invalid letter, a-z allowed")
-		return getValidChar()
+		return getNotTypedAlreadyAZChar()
 	}
 	if hasTyped(char) {
 		fmt.Printf("\r\nyou have already entered %c", char)
-		return getValidChar()
+		return getNotTypedAlreadyAZChar()
 	}
 	return char
 }
 
+// read single character
+// u can add custom lable like "input:"
 func readCharacter(label string) byte {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("\r\n" + label)
@@ -223,6 +227,7 @@ func readCharacter(label string) byte {
 	return char
 }
 
+// determine if letter is in a-z
 func isValidLetter(char byte) bool {
 	return char >= 97 && char <= 122
 }
