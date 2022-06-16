@@ -74,12 +74,16 @@ func restart() {
 }
 
 func randWord() {
+	prevWord := word //store previous word to avoid roll same twice
 	rand.Seed(time.Now().UnixNano())
 	min := 0
 	max := len(words) - 1
 	key := rand.Intn(max-min+1) + min
 	word = words[key][0]
 	hint = words[key][1]
+	if prevWord == word && len(words) > 1 {
+		randWord() //draft word agian
+	}
 }
 
 func print() {
