@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"runtime"
 	"time"
+	"unicode"
 )
 
 var mistakes int = 0        //how many mistakes the player has made
@@ -22,7 +23,7 @@ var words = [][]string{
 	{"dwarves", "fantasy humanlike race"},
 	{"fluffiness", "soft and light"},
 	{"galvanize", "shock or protective layer"},
-	{"united states of america", "quite big country"},
+	{"United States of America", "quite big country"},
 }
 
 func main() {
@@ -165,6 +166,7 @@ func printHint() {
 
 func hasMatch(char byte) bool {
 	for _, l := range word {
+		l = unicode.ToLower(l)
 		if byte(l) == char {
 			return true
 		}
@@ -183,6 +185,7 @@ func printMatchWord() {
 }
 
 func hasTyped(char byte) bool {
+	char = byte(unicode.ToLower(rune(char)))
 	for _, ch := range typedLetters {
 		if char == ch {
 			return true
