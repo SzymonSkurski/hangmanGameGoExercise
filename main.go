@@ -17,6 +17,7 @@ var word = ""               //word to guess
 var hint = ""               //hint to the word to be guessed
 var clear map[string]func() //map of commands to clean the screen by operating systems
 var words = [][]string{
+	//{word, hint}
 	{"bookworm", "a person or insect"},
 	{"awkward", "hard, uneassy"},
 	{"buzzwords", "fashionable word or phrase"},
@@ -68,7 +69,11 @@ func solve() {
 }
 
 func restart() {
-	readCharacter("press any key")
+	char := readCharacter("press any key to continue, x or q to exit")
+	if char == 'x' || char == 'q' {
+		fmt.Println("bye")
+		os.Exit(0)
+	}
 	reset()
 	play()
 }
