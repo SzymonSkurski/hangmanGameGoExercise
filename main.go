@@ -13,9 +13,9 @@ import (
 
 var mistakes int = 0        //how many mistakes the player has made
 var typedLetters = []byte{} //letters typed by the player
-var word = ""               //word to guess
-var hint = ""               //hint to the word to be guessed
+var wordKey int = -1        //key from words
 var clear map[string]func() //map of commands to clean the screen by operating systems
+var solvedWords = []int{}
 var words = [][]string{
 	//{word, hint}
 	{"bookworm", "a person or insect"},
@@ -46,6 +46,7 @@ func play() {
 	}
 	if hasWon() {
 		fmt.Println("you won, congratulations")
+		solvedWords = append(solvedWords, wordKey)
 		restart()
 	}
 	play() //play till win or lose
@@ -60,7 +61,7 @@ func reset() {
 
 func solve() {
 	typedLetters = nil
-	for _, l := range word {
+	for _, l := range getWord() {
 		if byte(l) == ' ' {
 			continue
 		}
@@ -79,16 +80,43 @@ func restart() {
 }
 
 func randWord() {
-	prevWord := word //store previous word to avoid roll same twice
+	if len(words) == len(solvedWords) {
+		fmt.Println("you have solved all words, congratulations")
+		os.Exit(0)
+	}
 	rand.Seed(time.Now().UnixNano())
 	min := 0
 	max := len(words) - 1
-	key := rand.Intn(max-min+1) + min
-	word = words[key][0]
-	hint = words[key][1]
-	if prevWord == word && len(words) > 1 {
+	wordKey = rand.Intn(max-min+1) + min
+	if isSolvedWord() {
 		randWord() //draft word agian
 	}
+}
+
+func isSolvedWord() bool {
+	if wordKey == -1 {
+		return false
+	}
+	for _, key := range solvedWords {
+		if key == wordKey {
+			return true
+		}
+	}
+	return false
+}
+
+func getWord() string {
+	if wordKey == -1 {
+		return ""
+	}
+	return words[wordKey][0]
+}
+
+func getHint() string {
+	if wordKey == -1 {
+		return ""
+	}
+	return words[wordKey][1]
 }
 
 func print() {
@@ -133,7 +161,6 @@ func clearScreen() {
 func action() {
 	char := getNotTypedAlreadyAZChar()
 	typedLetters = append(typedLetters, char)
-	fmt.Println(hasMatch(char))
 	if !hasMatch(char) {
 		mistakes++
 	}
@@ -144,7 +171,7 @@ func hasLose() bool {
 }
 
 func hasWon() bool {
-	for _, l := range word {
+	for _, l := range getWord() {
 		if byte(l) == ' ' {
 			continue
 		}
@@ -170,11 +197,11 @@ func printAvailableLetters() {
 }
 
 func printHint() {
-	fmt.Print("\r\nhint:" + hint)
+	fmt.Print("\r\nhint:" + getHint())
 }
 
 func hasMatch(char byte) bool {
-	for _, l := range word {
+	for _, l := range getWord() {
 		l = unicode.ToLower(l)
 		if byte(l) == char {
 			return true
@@ -184,7 +211,7 @@ func hasMatch(char byte) bool {
 }
 
 func printMatchWord() {
-	for _, l := range word {
+	for _, l := range getWord() {
 		p := '_'
 		if hasTyped(byte(l)) || byte(l) == ' ' {
 			p = l
